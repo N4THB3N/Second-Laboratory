@@ -1,6 +1,8 @@
 'use strict'
 
 var User = require('../models/user');
+var Answer = require('../models/answer');
+var Survey = require('../models/survey');
 var bcrypt = require('bcrypt-nodejs');
 var auth = require('../middlewares/authenticated');
 var jwt = require('../services/jwt');
@@ -80,12 +82,13 @@ function login(req, res){
                                 token: jwt.createToken(user)
                             });
                         } else {
-                            res.status(500).send({
-                                message: 'Working on putting something down here soon'
+                          Answer.find({user: user._id}, (err, answer) => {
+                            Survey.find({user: user._id}, (err, survey) => {
+                                res.status(200).send({answer, survey});
                             });
+                          });
                         }
-                    }
-                    else{
+                    }else{
                         res.status(404).send({
                             message: 'The user is unable to log-in correctly'
                         });
@@ -106,7 +109,7 @@ function updateUser(req, res){
     var userId = req.params.id;
     var update = req.body;
 
-    if(req.see.role == 'ROLE_USER'){
+    if(req.user.role == 'ROLE_USER'){
       User.findByIdAndUpdate(userId, update, {new: true}, (err, careerUpdate) => {
         if(err){
           res.status(500).send({
@@ -135,7 +138,7 @@ function updateUser(req, res){
   function dropUser(req, res){
     var userId = req.params.id;  
 
-    if(req.see.role == 'ROLE_USER'){
+    if(req.user.role == 'ROLE_USER'){
       User.findOneAndDelete({ _id:userId }, (err, userDelete) => {
         if(err){
           res.status(500).send({

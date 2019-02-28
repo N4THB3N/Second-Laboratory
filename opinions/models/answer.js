@@ -4,10 +4,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var AnswerSchema = Schema({
-    q1: String,
-    q2: String,
-    q3: String,
-    q4: String,
+    response: String,
+    si: Number,
+    no: Number,
+    quiza: Number,
     user: {type:Schema.ObjectId, ref:'User'},
     survey: {type:Schema.ObjectId, ref:'Survey'}
 });

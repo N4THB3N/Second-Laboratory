@@ -5,10 +5,7 @@ var Schema = mongoose.Schema;
 
 var SurveySchema = Schema({
     title: String,
-    q1: String,
-    q2: String,
-    q3: String,
-    q4: String,
+    question: String,
     user: {type:Schema.ObjectId, ref:'User'}
 });
 

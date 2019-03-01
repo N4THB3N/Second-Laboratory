@@ -15,33 +15,31 @@ function saveAnswer(req, res){
         answer.response = params.response;
         answer.user = req.user.sub;
         answer.survey = req.params.id;
+        if(params.response == 'Si'){
+          si ++;
+          answer.si = si;
+        }else if(params.response == 'No'){
+          no ++;
+          answer.no = no;
+        }else if(params.response == 'Quiza'){
+          quiza ++;
+          answer.quiza = quiza;
+        }
   
-        Answer.findOne({user:req.user.sub}, (err, issetAnswer) => {
-        if(err){
-            res.status(500).send({message: 'Sudden error'});
-        }else{
-          if(issetAnswer){
-            if(params.response == 'Si' || params.response == 'No' || params.response == 'Quiza'){
-              answer.save((err, surveyAnswer) => {
-                if(err){
-                  res.status(500).send({message: 'No way to save the user'});
-                }else{
+        Answer.findOne({survey:req.params.id, user:req.user.sub}, (err, issetAnswer) => {
+          if(err){
+              res.status(500).send({message: 'Sudden error'});
+          }else{
+            if(!issetAnswer){
+              if(params.response == 'Si' || params.response == 'No' || params.response == 'Quiza'){
+                answer.save((err, surveyAnswer) => {
+                  if(err){
+                    res.status(500).send({message: 'No way to save the user'});
+                  }else{
                   if(!surveyAnswer){
                     res.status(404).send({message: 'Unable to make a record to Users collection'});
                   }else{
-                    if(answer.response == 'Si'){
-                      si ++;
-                      answer.si = si;
-                      res.status(200).send({answer: surveyAnswer, message:'Amount of answers', si, no, quiza});
-                    }else if(answer.response == 'No'){
-                      no ++;
-                      answer.no = no;
-                      res.status(200).send({answer: surveyAnswer, message:'Amount of answers', si, no, quiza});
-                    }else if(answer.response == 'Quiza'){
-                      quiza ++;
-                      answer.quiza = quiza;
-                      res.status(200).send({answer: surveyAnswer, message:'Amount of answers', si, no, quiza});
-                    }
+                    res.status(200).send({surveyAnswer});
                   }
                 }
               });
